@@ -1,0 +1,25 @@
+## 小米 AX3000T · ImmortalWrt 24.10 / Linux 6.6 · 112M 大分区（纯净版）
+
+| 项目 | 值 |
+| --- | --- |
+| 源码 | [padavanonly/immortalwrt-mt798x-6.6](https://github.com/padavanonly/immortalwrt-mt798x-6.6) 分支 `openwrt-24.10-6.6` |
+| 目标 profile | `xiaomi_mi-router-ax3000t-mtkuboot`（MTK U-Boot layout） |
+| U-Boot 分区布局 | **必须选 `immortalwrt-112m`**（ubi = `0x600000` + 112 MiB，开启 NMBM） |
+| WiFi 驱动 | MTK 闭源驱动（`kmod-mt_wifi` + `mtwifi-cfg` + `luci-app-mtwifi-cfg`） |
+| 默认登录 | <http://192.168.6.1>　用户名 `root`　密码为空 |
+| 插件 | 纯净版 + Argon 主题 + 简体中文 + turboacc-mtk 硬件加速 |
+
+### 刷机步骤
+
+1. 确认已刷入 **yuzhii / hanwckf 多分区不死 U-Boot**（AX3000T 需与 v1/v2 硬件对应）。
+2. 断电 → 按住 RESET → 上电，保持 15 秒以上后松手，进入 failsafe WebUI。
+3. **先切换分区布局为 `immortalwrt-112m`**（WebUI 的 `/mtd-layout` 页面，或串口执行 `setenv mtd_layout immortalwrt-112m; saveenv`），并用 `showlayout` 核对。
+4. 上传 `*-squashfs-factory.bin` 开始刷机，等待自动重启。
+5. 电脑改回 DHCP，访问 <http://192.168.6.1>。
+
+### 注意事项
+
+- ⚠️ **布局必须与固件匹配**，且只能在 U-Boot 里切换布局刷机，不能在旧系统内升级来换布局。
+- ⚠️ 固件 dts 启用了 MTK-NMBM，U-Boot 侧需保持 NMBM 开启（yuzhii U-Boot 的 `VARIANT=default`）。
+- 首次开机后建议先备份 Nvram / Bdata / Factory / FIP 分区。
+- `-sysupgrade.bin` 用于已运行本固件时的系统内升级。
